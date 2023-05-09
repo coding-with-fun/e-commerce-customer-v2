@@ -11,7 +11,7 @@ axiosInstance.interceptors.request.use(
     function (config) {
         // Do something before request is sent
 
-        // Set user token if available in local storage
+        // Set customer token if available in local storage
 
         config.headers['Content-Type'] = 'application/json';
         config.headers.Accept = 'application/json';
