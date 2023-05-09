@@ -7,8 +7,9 @@ const env = {
     },
 
     redux: {
-        cartKey: process.env
-            .NEXT_PUBLIC_REDUX_LOCAL_STORAGE_STORE_KEY as string,
+        cartKey: process.env.NEXT_PUBLIC_REDUX_LOCAL_STORAGE_CART_KEY as string,
+        cartId: process.env
+            .NEXT_PUBLIC_REDUX_LOCAL_STORAGE_CART_ID_KEY as string,
     },
 
     stripe: {

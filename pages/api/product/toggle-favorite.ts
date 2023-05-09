@@ -31,7 +31,22 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         }
 
         // Get authenticated customer
-        const customer = await serverCheckCustomerAuthentication(req, res);
+        const customerExists = await serverCheckCustomerAuthentication(
+            req,
+            res
+        );
+        const customer = await prisma.customer.findFirst({
+            where: {
+                id: customerExists.id,
+            },
+            include: {
+                favoriteProducts: true,
+            },
+        });
+        if (!customer) {
+            res.statusCode = 401;
+            throw new Error('Customer not found with the given ID.');
+        }
 
         // Check if customer favorite products has the given product
         const isFavorite = customer.favoriteProducts.some(

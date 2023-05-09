@@ -1,16 +1,59 @@
+import axiosInstance from '@/libs/interceptor';
+import { CustomerCheckCustomerApiResponse } from '@/pages/api/customer/check-customer';
+import env from '@/utils/env';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import {
+    useQuery,
+    useMutation,
+    useQueryClient,
+    QueryClient,
+    QueryClientProvider,
+} from '@tanstack/react-query';
 
 const AppWrapper = ({ children }: IProps) => {
+    const { data: session, status } = useSession();
     const { events } = useRouter();
 
-    const [loading, setLoading] = useState(true);
+    const [routeChangeLoading, setRouteChangeLoading] = useState(true);
+    const [customerDataFetched, setCustomerDataFetched] = useState(false);
+
+    const { refetch } = useQuery({
+        queryFn: checkCustomerAPI,
+        enabled: false,
+        onSuccess(data) {},
+    });
+
+    const handleGetCart = async () => {
+        const storedCart = localStorage.getItem(env.redux.cartId);
+
+        if (storedCart) {
+        }
+    };
+
+    useEffect(() => {
+        console.log('--------------------------------------------');
+        console.log('Session data is');
+        console.log({
+            session,
+        });
+        console.log('--------------------------------------------');
+
+        if (session) {
+            refetch();
+        } else {
+            setCustomerDataFetched(true);
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [session]);
 
     useEffect(() => {
         const disableLoaderTimeout = setTimeout(() => {
-            setLoading(false);
+            setRouteChangeLoading(false);
         }, 10);
 
         return () => clearTimeout(disableLoaderTimeout);
@@ -18,10 +61,10 @@ const AppWrapper = ({ children }: IProps) => {
 
     useEffect(() => {
         const start = () => {
-            setLoading(true);
+            setRouteChangeLoading(true);
         };
         const end = () => {
-            setLoading(false);
+            setRouteChangeLoading(false);
         };
 
         events.on('routeChangeStart', start);
@@ -35,7 +78,7 @@ const AppWrapper = ({ children }: IProps) => {
         };
     }, [events]);
 
-    if (loading) {
+    if (status === 'loading' || routeChangeLoading || !customerDataFetched) {
         return <PageLoader />;
     }
 
@@ -54,4 +97,11 @@ export const PageLoader = () => {
             <CircularProgress />
         </Box>
     );
+};
+
+const checkCustomerAPI = async () => {
+    const res: CustomerCheckCustomerApiResponse = await axiosInstance(
+        '/api/customer/check-customer'
+    );
+    return res;
 };

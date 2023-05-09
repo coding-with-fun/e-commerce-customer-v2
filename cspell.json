@@ -10,7 +10,8 @@
         "nextauth",
         "persistor",
         "reduxjs",
-        "tailwindcss"
+        "tailwindcss",
+        "tanstack"
     ],
     "ignoreWords": [],
     "import": []

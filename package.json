@@ -20,6 +20,7 @@
         "@reduxjs/toolkit": "1.9.5",
         "@stripe/react-stripe-js": "^2.1.0",
         "@stripe/stripe-js": "^1.52.1",
+        "@tanstack/react-query": "4.29.5",
         "@types/node": "18.16.3",
         "@types/react": "18.2.0",
         "@types/react-dom": "18.2.1",
@@ -38,13 +39,13 @@
         "react-redux": "8.0.5",
         "react-toastify": "9.1.2",
         "stripe": "^12.4.0",
-        "swr": "2.1.5",
         "tailwindcss": "3.3.2",
         "typescript": "5.0.4",
         "zod": "3.21.4",
         "zod-formik-adapter": "1.2.0"
     },
     "devDependencies": {
+        "@tanstack/eslint-plugin-query": "^4.29.4",
         "@types/bcryptjs": "2.4.2",
         "@types/lodash": "4.14.194",
         "prettier": "2.8.8",

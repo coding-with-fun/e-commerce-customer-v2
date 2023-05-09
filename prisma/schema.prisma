@@ -124,6 +124,10 @@ model cart {
   shippingCost Decimal?
   total        Decimal?
   // -------------------------------
+  // Flags
+  // -------------------------------
+  deletedAt    DateTime?
+  // -------------------------------
   // Dates
   // -------------------------------
   createdAt    DateTime   @default(now())

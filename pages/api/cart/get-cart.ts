@@ -1,10 +1,15 @@
 import prisma from '@/libs/prisma';
 import response from '@/libs/response';
 import requestValidator from '@/middlewares/requestValidator';
+import { cart, cartData } from '@prisma/client';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import z from 'zod';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+    const responseOptions = {
+        deleteCartId: false,
+    };
+
     try {
         if (req.method !== 'GET') {
             throw new Error('API not found!');
@@ -28,13 +33,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                 cartData: true,
             },
         });
+        if (!cart) {
+            responseOptions.deleteCartId = true;
+            throw new Error('Cart not found.');
+        }
 
         return response(res, {
             message: 'Cart details fetched successfully.',
             cart,
         });
     } catch (error) {
-        return response(res, null, error);
+        return response(res, responseOptions, error);
     } finally {
         await prisma.$disconnect();
     }
@@ -53,3 +62,9 @@ const getCartSchema = z.object({
     }),
 });
 type getCartSchemaType = z.infer<typeof getCartSchema>;
+
+export type CartGetCartApiResponse = {
+    cart: cart & {
+        cartData: cartData[];
+    };
+};

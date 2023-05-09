@@ -20,20 +20,19 @@ const serverCheckCustomerAuthentication = async (
         where: {
             id: customerID,
         },
-        include: {
-            favoriteProducts: true,
-        },
     });
     if (!customer) {
-        res.statusCode = 400;
+        res.statusCode = 401;
         throw new Error('Customer not found with the given ID.');
     }
 
     if (!customer.isActive) {
+        res.statusCode = 401;
         throw new Error('Your account has been deactivated.');
     }
 
     if (customer.deletedAt) {
+        res.statusCode = 401;
         throw new Error('Your account has been deleted.');
     }
 
