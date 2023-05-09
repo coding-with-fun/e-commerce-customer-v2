@@ -11,7 +11,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
             throw new Error('API not found!');
         }
 
-        // Get query parameters
+        // Get request parameters
         const parsedData = (await requestValidator(
             req,
             toggleFavoriteSchema

@@ -13,6 +13,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
         // Get query parameters
         const { page, perPage, query } = pagination(req);
+
+        // Get request parameters
         const parsedData = (await requestValidator(
             req,
             sortSchema
