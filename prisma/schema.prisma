@@ -1,0 +1,161 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model customer {
+  id               String    @id @unique @default(uuid())
+  name             String    @db.VarChar(255)
+  profilePicture   String?
+  email            String    @unique
+  password         String
+  contactNumber    String    @unique
+  // -------------------------------
+  // Flags
+  // -------------------------------
+  isActive         Boolean   @default(true)
+  deletedAt        DateTime?
+  // -------------------------------
+  // Dates
+  // -------------------------------
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  // -------------------------------
+  // Relationship
+  // -------------------------------
+  carts            cart[]
+  // -------------------------------
+  ratings          rating[]
+  // -------------------------------
+  favoriteProducts product[]
+  // -------------------------------
+}
+
+model seller {
+  id             String    @id @unique @default(uuid())
+  name           String    @db.VarChar(255)
+  profilePicture String?
+  email          String    @unique
+  password       String
+  contactNumber  String    @unique
+  // -------------------------------
+  // Flags
+  // -------------------------------
+  isActive       Boolean   @default(true)
+  deletedAt      DateTime?
+  // -------------------------------
+  // Dates
+  // -------------------------------
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  // -------------------------------
+  // Relationship
+  // -------------------------------
+  products       product[]
+  // -------------------------------
+}
+
+model product {
+  id          String     @id @unique @default(uuid())
+  title       String     @db.VarChar(255)
+  description String     @db.LongText
+  coverImage  String?
+  price       Decimal
+  quantity    Int
+  // -------------------------------
+  // Flags
+  // -------------------------------
+  isActive    Boolean    @default(true)
+  deletedAt   DateTime?
+  // -------------------------------
+  // Dates
+  // -------------------------------
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  // -------------------------------
+  // Relationship
+  // -------------------------------
+  seller      seller     @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  sellerId    String
+  // -------------------------------
+  cartData    cartData[]
+  // -------------------------------
+  ratings     rating[]
+  // -------------------------------
+  favoriteBy  customer[]
+  // -------------------------------
+}
+
+model rating {
+  id         String    @id @unique @default(uuid())
+  stars      Int
+  comment    String    @db.LongText
+  // -------------------------------
+  // Flags
+  // -------------------------------
+  deletedAt  DateTime?
+  // -------------------------------
+  // Dates
+  // -------------------------------
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  // -------------------------------
+  // Relationship
+  // -------------------------------
+  product    product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId  String
+  // -------------------------------
+  customer   customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId String
+  // -------------------------------
+}
+
+model cart {
+  id           String     @id @unique @default(uuid())
+  cartId       String
+  subtotal     Decimal?
+  shippingCost Decimal?
+  total        Decimal?
+  // -------------------------------
+  // Dates
+  // -------------------------------
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  // -------------------------------
+  // Relationship
+  // -------------------------------
+  cartData     cartData[]
+  // -------------------------------
+  customer     customer[]
+  // -------------------------------
+}
+
+model cartData {
+  id        String    @id @unique @default(uuid())
+  quantity  Int
+  // -------------------------------
+  // Flags
+  // -------------------------------
+  deletedAt DateTime?
+  // -------------------------------
+  // Dates
+  // -------------------------------
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  // -------------------------------
+  // Relationship
+  // -------------------------------
+  cart      cart      @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  cartId    String
+  // -------------------------------
+  product   product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+  // -------------------------------
+}
