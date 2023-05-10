@@ -1,7 +1,13 @@
 @import url(./preflight.css);
+@import url(./variables.css);
 
 @tailwind components;
 @tailwind utilities;
+
+body {
+    color: var(--mainTextColor) !important;
+    background-color: var(--bgColor) !important;
+}
 
 .MuiDataGrid-cell:focus,
 .MuiDataGrid-cell:focus-within,
@@ -45,4 +51,12 @@
 
 .cart-table tbody tr td {
     padding: 1rem 0;
+}
+
+.font-noto {
+    font-family: 'Noto Sans', sans-serif;
+}
+
+.font-poppins {
+    font-family: 'Poppins', sans-serif;
 }
