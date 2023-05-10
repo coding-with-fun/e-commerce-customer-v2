@@ -1,0 +1,24 @@
+.buttonBase {
+    border-radius: 4px;
+    transition: color 250ms ease-in-out, background-color 250ms ease-in-out;
+}
+
+.outlinedButton {
+    border: 1px solid var(--darkBorderColor);
+}
+
+.outlinedButton:hover {
+    color: var(--bgColor);
+    background-color: var(--darkBgColor);
+}
+
+.blockButton {
+    border: 1px solid var(--darkBorderColor);
+    color: var(--bgColor);
+    background-color: var(--darkBgColor);
+}
+
+.blockButton:hover {
+    color: var(--darkBgColor);
+    background-color: var(--bgColor);
+}
