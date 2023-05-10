@@ -26,3 +26,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 export default handler;
+
+export type CartCreateAnonymousCartApiResponse = {
+    message: string;
+    cartId: string;
+};

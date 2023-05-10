@@ -16,7 +16,13 @@ import '@/styles/globals.css';
 import 'react-toastify/dist/ReactToastify.css';
 
 const clientSideEmotionCache = createEmotionCache();
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            refetchOnWindowFocus: false,
+        },
+    },
+});
 
 const App = ({
     Component,
@@ -24,17 +30,15 @@ const App = ({
     pageProps: { session, ...pageProps },
 }: CustomAppProps) => {
     return (
-        <QueryClientProvider client={queryClient}>
+        <SessionProvider session={session} refetchOnWindowFocus={false}>
             <CacheProvider value={emotionCache}>
                 <ThemeProvider theme={theme}>
                     <Provider store={store}>
-                        <SessionProvider
-                            session={session}
-                            refetchOnWindowFocus={false}
-                        >
+                        <QueryClientProvider client={queryClient}>
                             <CssBaseline />
 
                             <Navbar />
+
                             <AppWrapper>
                                 <ToastContainer
                                     position="top-right"
@@ -53,11 +57,11 @@ const App = ({
                                     <Component {...pageProps} />
                                 </main>
                             </AppWrapper>
-                        </SessionProvider>
+                        </QueryClientProvider>
                     </Provider>
                 </ThemeProvider>
             </CacheProvider>
-        </QueryClientProvider>
+        </SessionProvider>
     );
 };
 

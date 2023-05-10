@@ -23,9 +23,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                 carts: {
                     where: {
                         deletedAt: null,
+                        closedAt: null,
                     },
                     include: {
                         cartData: true,
+                    },
+                    orderBy: {
+                        createdAt: 'desc',
                     },
                 },
             },
@@ -36,8 +40,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         }
 
         return response(res, {
-            message: 'Status updated successfully.',
-            customer,
+            message: 'Customer data fetched successfully.',
+            customer: {
+                ...customer,
+                cart: customer.carts[0],
+            },
         });
     } catch (error) {
         return response(res, null, error);
@@ -51,8 +58,8 @@ export default handler;
 export type CustomerCheckCustomerApiResponse = {
     message: string;
     customer: customer & {
-        carts: (cart & {
+        cart: cart & {
             cartData: cartData[];
-        })[];
+        };
     };
 };

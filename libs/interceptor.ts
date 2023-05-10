@@ -1,6 +1,7 @@
 import env from '@/utils/env';
 import axios from 'axios';
 import _ from 'lodash';
+import { signOut } from 'next-auth/react';
 
 export const baseURL = env.baseURL;
 
@@ -40,6 +41,15 @@ axiosInstance.interceptors.response.use(
         // Any status codes that falls outside the range of 2xx cause this function to trigger
         // Do something with response
 
+        console.log(error);
+
+        if (error.response.status === 401) {
+            console.log('TRIGGER SIGN OUT');
+
+            signOut({
+                redirect: false,
+            });
+        }
         return await Promise.reject(error.response.data);
     }
 );

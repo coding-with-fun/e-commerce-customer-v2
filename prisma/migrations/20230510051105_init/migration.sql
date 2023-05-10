@@ -76,6 +76,8 @@ CREATE TABLE `cart` (
     `subtotal` DECIMAL(65, 30) NULL,
     `shippingCost` DECIMAL(65, 30) NULL,
     `total` DECIMAL(65, 30) NULL,
+    `deletedAt` DATETIME(3) NULL,
+    `closedAt` DATETIME(3) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
