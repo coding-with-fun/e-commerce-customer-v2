@@ -52,16 +52,6 @@ const Navbar = () => {
                         ) : null}
 
                         {status === 'authenticated' ? (
-                            // <Typography
-                            //     className="cursor-pointer"
-                            //     onClick={() => {
-                            //         signOut({
-                            //             redirect: false,
-                            //         });
-                            //     }}
-                            // >
-                            //     Sign Out
-                            // </Typography>
                             <Fragment>
                                 <Tooltip title="Open settings">
                                     <IconButton
