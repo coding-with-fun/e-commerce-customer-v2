@@ -22,7 +22,15 @@ const ProductSlice = createSlice({
             state.products = [...payload.products];
         },
 
-        toggleFavoriteProduct: (state, action) => {},
+        toggleFavoriteProduct: (state, action) => {
+            const payload = action.payload;
+
+            const index = state.products.findIndex(
+                (el) => el.id === payload.id
+            );
+            state.products[index].isFavorite =
+                !state.products[index].isFavorite;
+        },
     },
 });
 

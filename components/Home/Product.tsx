@@ -24,6 +24,8 @@ import {
     ProductListProduct,
 } from '@/pages/api/product/list';
 import HomeProductType from '@/types/homeProduct';
+import { useMutation } from '@tanstack/react-query';
+import _ from 'lodash';
 
 const Product = ({ product }: IProps) => {
     const { push } = useRouter();
@@ -36,6 +38,20 @@ const Product = ({ product }: IProps) => {
     const [isSignInAlertOpen, setIsSignInAlertOpen] = useState(false);
     const [cleanSignInAlertContent, setCleanSignInAlertContent] =
         useState(false);
+
+    const toggleFavoriteMutation = useMutation({
+        mutationFn: toggleFavoriteAPI,
+        onSuccess(data, variables, context) {
+            dispatch(
+                toggleFavoriteProduct({
+                    id: product.id,
+                })
+            );
+        },
+        onError(error, variables, context) {
+            toast(_.get(error, 'message', 'Something went wrong.'));
+        },
+    });
 
     const handleCloseSignInAlert = () => {
         setIsSignInAlertOpen(false);
@@ -69,7 +85,7 @@ const Product = ({ product }: IProps) => {
                     position: 'relative',
                 }}
             >
-                {/* {isMutating ? (
+                {toggleFavoriteMutation.isLoading ? (
                     <Box
                         sx={{
                             position: 'absolute',
@@ -87,7 +103,7 @@ const Product = ({ product }: IProps) => {
                     >
                         <CircularProgress />
                     </Box>
-                ) : null} */}
+                ) : null}
 
                 <Box className="relative h-40">
                     <Image
@@ -141,9 +157,9 @@ const Product = ({ product }: IProps) => {
                             if (status === 'unauthenticated') {
                                 handleOpenSignInAlert();
                             } else {
-                                // trigger({
-                                //     id: product.id,
-                                // });
+                                toggleFavoriteMutation.mutate({
+                                    productId: product.id,
+                                });
                             }
                         }}
                     >
@@ -208,18 +224,7 @@ interface IProps {
     product: HomeProductType;
 }
 
-const fetcher = async (
-    url: string,
-    {
-        arg,
-    }: {
-        arg: {
-            id: number;
-        };
-    }
-) => {
-    const response = await axiosInstance.post(url, {
-        id: arg.id,
-    });
-    return response;
+const toggleFavoriteAPI = async (body: { productId: string }) => {
+    const data = await axiosInstance.post('/api/product/toggle-favorite', body);
+    return data;
 };
