@@ -3,6 +3,7 @@ import { useAppDispatch } from '@/hooks/redux';
 import axiosInstance from '@/libs/interceptor';
 import toast from '@/libs/toast';
 import { toggleFavoriteProduct } from '@/redux/slice/products.slice';
+import { HomeProductType } from '@/types';
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 import FavoriteOutlinedIcon from '@mui/icons-material/FavoriteOutlined';
 import {
@@ -13,26 +14,21 @@ import {
     Skeleton,
     Typography,
 } from '@mui/material';
+import { useMutation } from '@tanstack/react-query';
+import _ from 'lodash';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Fragment, useEffect, useState } from 'react';
 import SignInAlert from './SignInAlert';
-import {
-    ProductListApiResponse,
-    ProductListProduct,
-} from '@/pages/api/product/list';
-import HomeProductType from '@/types/homeProduct';
-import { useMutation } from '@tanstack/react-query';
-import _ from 'lodash';
 
 const Product = ({ product }: IProps) => {
     const { push } = useRouter();
     const { status } = useSession();
     const dispatch = useAppDispatch();
 
-    const productSlug = product.title.split(' ').join('-') + `-${product.id}`;
+    const productSlug = product.title.split(' ').join('-') + `--${product.id}`;
 
     const [isImageLoading, setIsImageLoading] = useState(true);
     const [isSignInAlertOpen, setIsSignInAlertOpen] = useState(false);

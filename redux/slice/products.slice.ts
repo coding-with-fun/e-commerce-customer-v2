@@ -1,7 +1,6 @@
+import { HomeProductType } from '@/types';
 import { createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../store';
-import { ProductListApiResponse } from '@/pages/api/product/list';
-import HomeProductType from '@/types/homeProduct';
 
 export interface IInitialData {
     products: HomeProductType[];

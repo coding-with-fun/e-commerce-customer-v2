@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import axiosInstance from '@/libs/interceptor';
 import toast from '@/libs/toast';
 import { setProducts } from '@/redux/slice/products.slice';
+import { HomeProductType } from '@/types';
 import env from '@/utils/env';
 import { Box } from '@mui/material';
 import { omit } from 'lodash';
@@ -14,7 +15,6 @@ import { useSession } from 'next-auth/react';
 import Head from 'next/head';
 import { Fragment, useEffect, useState } from 'react';
 import { ProductListApiResponse } from './api/product/list';
-import HomeProductType from '@/types/homeProduct';
 
 const Home = ({ data }: { data: ProductListApiResponse }) => {
     const { data: session } = useSession();

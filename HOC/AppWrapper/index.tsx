@@ -60,6 +60,11 @@ const AppWrapper = ({ children }: IProps) => {
         queryKey: ['checkCustomer'],
         onSuccess(data) {
             localStorage.setItem(env.redux.cartId, data.customer.cart.id);
+            dispatch(
+                setCart({
+                    cart: data.customer.cart,
+                })
+            );
             setFetchingCartDetails(false);
         },
         onError(err) {
