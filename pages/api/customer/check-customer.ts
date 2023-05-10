@@ -74,8 +74,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         }
 
         if (localCartId !== customerResponse.cart.id) {
-            console.log('CARTS are different...');
-
             const localCartData = await prisma.cart.findFirst({
                 where: {
                     id: localCartId,

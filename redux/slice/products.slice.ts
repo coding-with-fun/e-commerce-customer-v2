@@ -1,8 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../store';
+import { ProductListApiResponse } from '@/pages/api/product/list';
+import HomeProductType from '@/types/homeProduct';
 
 export interface IInitialData {
-    products: any[];
+    products: HomeProductType[];
 }
 
 const initialState: IInitialData = {
@@ -13,11 +15,18 @@ const ProductSlice = createSlice({
     name: 'product',
     initialState,
     reducers: {
+        setProducts: (state, action) => {
+            const payload = action.payload as {
+                products: HomeProductType[];
+            };
+            state.products = [...payload.products];
+        },
+
         toggleFavoriteProduct: (state, action) => {},
     },
 });
 
-export const { toggleFavoriteProduct } = ProductSlice.actions;
+export const { setProducts, toggleFavoriteProduct } = ProductSlice.actions;
 
 export const product = (state: RootState): IInitialData => state.products;
 

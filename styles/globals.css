@@ -16,6 +16,10 @@ body {
     outline: none !important;
 }
 
+.MuiPaper-root {
+    background-color: var(--bgColor) !important;
+}
+
 .hide-scrollbar {
     -ms-overflow-style: none; /* Internet Explorer 10+ */
     scrollbar-width: none; /* Firefox */

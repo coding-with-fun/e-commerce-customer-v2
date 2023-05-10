@@ -2,6 +2,7 @@ import prisma from '@/libs/prisma';
 import response from '@/libs/response';
 import pagination from '@/middlewares/cleanPagination';
 import requestValidator from '@/middlewares/requestValidator';
+import { product } from '@prisma/client';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import z from 'zod';
 
@@ -62,6 +63,20 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                             id: true,
                         },
                     },
+                    ratings: {
+                        where: {
+                            deletedAt: null,
+                        },
+                        select: {
+                            id: true,
+                            stars: true,
+                        },
+                    },
+                    _count: {
+                        select: {
+                            ratings: true,
+                        },
+                    },
                 },
                 orderBy: {
                     [sortBy]: sortDirection,
@@ -114,8 +129,36 @@ export default handler;
 
 const sortSchema = z.object({
     query: z.object({
-        sortBy: z.string(),
-        sortDirection: z.string(),
+        sortBy: z.string().optional().default('createdAt'),
+        sortDirection: z.string().optional().default('desc'),
     }),
 });
 type sortSchemaType = z.infer<typeof sortSchema>;
+
+export type ProductListProduct = product & {
+    seller: {
+        id: string;
+        name: string;
+    };
+    ratings: {
+        id: string;
+        stars: number;
+    }[];
+    _count: {
+        ratings: number;
+    };
+    favoriteBy: {
+        id: string;
+    }[];
+};
+
+export type ProductListApiResponse = {
+    success: boolean;
+    message: string;
+    products: ProductListProduct[];
+    pagination: {
+        total: number;
+        page: number;
+        perPage: number;
+    };
+};

@@ -44,8 +44,6 @@ axiosInstance.interceptors.response.use(
         console.log(error);
 
         if (error.response.status === 401) {
-            console.log('TRIGGER SIGN OUT');
-
             signOut({
                 redirect: false,
             });
