@@ -42,6 +42,25 @@ const AppWrapper = ({ children }: IProps) => {
         retry: false,
     });
 
+    useQuery({
+        enabled: status === 'authenticated',
+        queryFn: async () => {
+            const localCartId = localStorage.getItem(env.redux.cartId);
+            const data = await checkCustomerAPI(localCartId);
+            return data;
+        },
+        queryKey: ['checkCustomer'],
+        onSuccess(data) {
+            console.log(data);
+            localStorage.setItem(env.redux.cartId, data.customer.cart.id);
+            setFetchingCartDetails(false);
+        },
+        onError(err) {
+            setFetchingCartDetails(false);
+        },
+        retry: false,
+    });
+
     /**
      * Check session on every window reload
      */
@@ -136,9 +155,9 @@ const getCartAPI = async (cartId: string | null) => {
     return data;
 };
 
-const checkCustomerAPI = async () => {
+const checkCustomerAPI = async (localCartId: string | null) => {
     const data: CustomerCheckCustomerApiResponse = await axiosInstance.get(
-        '/api/customer/check-customer'
+        `/api/customer/check-customer?localCartId=${localCartId}`
     );
     return data;
 };
