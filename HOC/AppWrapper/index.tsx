@@ -1,7 +1,9 @@
+import { useAppDispatch } from '@/hooks/redux';
 import axiosInstance from '@/libs/interceptor';
 import { CartCreateAnonymousCartApiResponse } from '@/pages/api/cart/create-anonymous-cart';
 import { CartGetCartApiResponse } from '@/pages/api/cart/get-cart';
 import { CustomerCheckCustomerApiResponse } from '@/pages/api/customer/check-customer';
+import { setCart } from '@/redux/slice/cart.slice';
 import env from '@/utils/env';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -13,6 +15,7 @@ import { useEffect, useState } from 'react';
 const AppWrapper = ({ children }: IProps) => {
     const { data: session, status } = useSession();
     const { events } = useRouter();
+    const dispatch = useAppDispatch();
 
     const [routeChangeLoading, setRouteChangeLoading] = useState(true);
     const [fetchingCartDetails, setFetchingCartDetails] = useState(true);
@@ -34,6 +37,11 @@ const AppWrapper = ({ children }: IProps) => {
         queryFn: () => getCartAPI(localCartId),
         queryKey: ['getCart', localCartId],
         onSuccess(data) {
+            dispatch(
+                setCart({
+                    cart: data.cart,
+                })
+            );
             setFetchingCartDetails(false);
         },
         onError(err) {
