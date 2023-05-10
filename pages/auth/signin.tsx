@@ -12,6 +12,7 @@ const SignIn = () => {
                     signIn('credentials', {
                         email: 'dev@harrsh.com',
                         password: 'Abcd',
+                        callbackUrl: '/',
                     });
                 }}
             >

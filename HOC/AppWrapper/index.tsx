@@ -6,7 +6,6 @@ import env from '@/utils/env';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import _ from 'lodash';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -17,52 +16,30 @@ const AppWrapper = ({ children }: IProps) => {
 
     const [routeChangeLoading, setRouteChangeLoading] = useState(true);
     const [fetchingCartDetails, setFetchingCartDetails] = useState(true);
-    const [cartId, setCartId] = useState<string | null>(null);
+    const [localCartId, setLocalCartId] = useState<string | null>(null);
 
     const createAnonymousCartMutation = useMutation({
         mutationFn: createAnonymousCartAPI,
-        onSuccess: (data) => {
+        onSuccess(data, variables, context) {
             localStorage.setItem(env.redux.cartId, data.cartId);
             setFetchingCartDetails(false);
         },
-    });
-
-    useQuery({
-        queryKey: ['cartData', cartId],
-        queryFn: () => getCartAPI(cartId),
-        enabled: Boolean(cartId),
-        onError(err) {
-            if (_.get(err, 'deleteCartId')) {
-                localStorage.removeItem(env.redux.cartId);
-
-                createAnonymousCartMutation.mutate();
-            } else {
-                setFetchingCartDetails(false);
-            }
-        },
-        onSuccess(data) {
+        onError(error, variables, context) {
             setFetchingCartDetails(false);
         },
     });
 
     useQuery({
-        queryKey: ['checkCustomer'],
-        queryFn: checkCustomerAPI,
-        enabled: status === 'authenticated',
+        enabled: Boolean(localCartId),
+        queryFn: () => getCartAPI(localCartId),
+        queryKey: ['getCart', localCartId],
         onSuccess(data) {
-            const localCartId = localStorage.getItem(env.redux.cartId);
-            const customerCartId = data.customer.cart.id;
-
-            if (localCartId !== customerCartId) {
-                setCartId(localCartId);
-                localStorage.setItem(
-                    env.redux.cartId,
-                    data.customer.cart.cartId
-                );
-            } else {
-                setFetchingCartDetails(false);
-            }
+            setFetchingCartDetails(false);
         },
+        onError(err) {
+            createAnonymousCartMutation.mutate();
+        },
+        retry: false,
     });
 
     /**
@@ -77,22 +54,13 @@ const AppWrapper = ({ children }: IProps) => {
             });
             console.log('--------------------------------------------');
 
-            const cartId = localStorage.getItem(env.redux.cartId);
             if (status === 'unauthenticated') {
-                // If customer is not authenticated
+                const localCartId = localStorage.getItem(env.redux.cartId);
 
-                if (!cartId) {
-                    // If cart ID is not there in local storage, create new anonymous cart
+                if (localCartId) {
+                    setLocalCartId(localCartId);
+                } else {
                     createAnonymousCartMutation.mutate();
-                } else {
-                    // If cart ID is there in local storage, get the cart details
-                    setCartId(cartId);
-                }
-            } else if (status === 'authenticated') {
-                // If customer is authenticated
-
-                if (!cartId) {
-                } else {
                 }
             }
         }
