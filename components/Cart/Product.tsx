@@ -48,8 +48,10 @@ const Product = ({ product, cartData }: IProps) => {
     };
 
     const handleAddMoreToCart = () => {
-        changeInQuantity.current = true;
-        setQuantity((prev) => prev + 1);
+        if (product.quantity > quantity) {
+            changeInQuantity.current = true;
+            setQuantity((prev) => prev + 1);
+        }
     };
 
     const handleRemoveFromCart = () => {
@@ -80,6 +82,7 @@ const Product = ({ product, cartData }: IProps) => {
         },
         onError(error, variables, context) {
             toast(_.get(error, 'message', 'Something went wrong.'));
+            setQuantity(cartData.quantity);
         },
     });
 
