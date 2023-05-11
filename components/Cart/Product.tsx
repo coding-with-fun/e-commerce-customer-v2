@@ -231,9 +231,7 @@ const Product = ({ product }: IProps) => {
                 </Box>
             </td>
         </tr>
-    ) : (
-        <EmptyCart />
-    );
+    ) : null;
 };
 
 export default Product;
