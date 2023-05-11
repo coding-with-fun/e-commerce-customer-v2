@@ -63,11 +63,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
             where: {
                 id: customerCartId,
             },
+            include: {
+                cartData: true,
+            },
         });
         if (!customerCartData) {
             const newCart = await prisma.cart.create({
                 data: {
                     cartId: Date.now().toString(),
+                },
+                include: {
+                    cartData: true,
                 },
             });
             customerResponse.cart = newCart;
@@ -93,6 +99,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                                 data: localCartData.cartData,
                             },
                         },
+                    },
+                    include: {
+                        cartData: true,
                     },
                 });
                 customerResponse.cart = updatedCustomerCart;
