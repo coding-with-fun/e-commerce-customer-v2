@@ -17,6 +17,10 @@ const env = {
             .NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string,
         secretKey: process.env.STRIPE_SECRET_KEY as string,
     },
+
+    api: {
+        countryAPI: process.env.NEXT_PUBLIC_COUNTRY_API_ENDPOINT as string,
+    },
 };
 
 export default env;
