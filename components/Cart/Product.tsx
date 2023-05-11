@@ -186,7 +186,13 @@ const Product = ({ product, cartData }: IProps) => {
 
             <td className="w-[250px]">
                 <Box className="flex items-center">
-                    <Box className="flex items-center border border-[#28282B] border-solid w-fit">
+                    <Box
+                        className={`flex items-center border border-[#28282B] border-solid w-fit ${
+                            setProductToCartMutation.isLoading
+                                ? 'opacity-20'
+                                : 'opacity-100'
+                        }`}
+                    >
                         <ButtonBase
                             className="w-11 h-11 flex cursor-pointer"
                             disabled={setProductToCartMutation.isLoading}
