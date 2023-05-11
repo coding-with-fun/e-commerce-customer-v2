@@ -36,6 +36,8 @@ model customer {
   // -------------------------------
   favoriteProducts product[]
   // -------------------------------
+  addresses        address[]
+  // -------------------------------
 }
 
 model seller {
@@ -140,6 +142,9 @@ model cart {
   // -------------------------------
   customer     customer[]
   // -------------------------------
+  address      address?   @relation(fields: [addressId], references: [id])
+  addressId    String?
+  // -------------------------------
 }
 
 model cartData {
@@ -162,5 +167,36 @@ model cartData {
   // -------------------------------
   product   product   @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String
+  // -------------------------------
+}
+
+model address {
+  id            String    @id @unique @default(uuid())
+  country       String
+  firstName     String
+  lastName      String
+  address       String    @db.LongText
+  apartment     String?   @db.LongText
+  city          String
+  state         String
+  pinCode       String
+  contactNumber String?
+  email         String?
+  // -------------------------------
+  // Flags
+  // -------------------------------
+  deletedAt     DateTime?
+  // -------------------------------
+  // Dates
+  // -------------------------------
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  // -------------------------------
+  // Relationship
+  // -------------------------------
+  customer      customer  @relation(fields: [customerId], references: [id])
+  customerId    String
+  // -------------------------------
+  cart          cart[]
   // -------------------------------
 }
