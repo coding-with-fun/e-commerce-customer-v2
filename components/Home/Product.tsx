@@ -22,7 +22,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Fragment, useEffect, useState } from 'react';
 import SignInAlert from './SignInAlert';
-import { getSlug } from '@/utils';
+import { formatAmount, getSlug } from '@/utils';
 
 const Product = ({ product }: IProps) => {
     const { push } = useRouter();
@@ -175,7 +175,7 @@ const Product = ({ product }: IProps) => {
                     }}
                 >
                     <Typography className="font-medium">
-                        Rs. {`${product.price}`}
+                        {formatAmount(+product.price)}
                     </Typography>
 
                     <Box

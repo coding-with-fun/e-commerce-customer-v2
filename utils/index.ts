@@ -5,5 +5,9 @@ export const getSlug = (product: product) => {
 };
 
 export const formatAmount = (amount: number) => {
-    return `Rs. ${amount.toLocaleString()}`;
+    return amount.toLocaleString('en-IN', {
+        maximumFractionDigits: 2,
+        style: 'currency',
+        currency: 'INR',
+    });
 };

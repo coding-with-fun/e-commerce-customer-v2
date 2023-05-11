@@ -4,6 +4,8 @@ import axiosInstance from '@/libs/interceptor';
 import toast from '@/libs/toast';
 import { CartSetProductToCartApiResponse } from '@/pages/api/cart/set-product-to-cart';
 import { setCart } from '@/redux/slice/cart.slice';
+import { ProductDetailsType } from '@/types';
+import { formatAmount } from '@/utils';
 import env from '@/utils/env';
 import AddIcon from '@mui/icons-material/Add';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -112,7 +114,7 @@ const Details = ({ product }: IProps) => {
                         priority
                         fill
                         quality={100}
-                        src={product.coverImage}
+                        src={product.coverImage || ''}
                         alt={product.title}
                         sizes="160px"
                         style={{
@@ -147,7 +149,7 @@ const Details = ({ product }: IProps) => {
 
                     <Box>
                         <Typography className="text-lg">
-                            Rs. {product.price}
+                            {formatAmount(+product.price)}
                         </Typography>
                     </Box>
 
@@ -265,7 +267,7 @@ const Details = ({ product }: IProps) => {
 export default Details;
 
 interface IProps {
-    product: any;
+    product: ProductDetailsType;
 }
 
 const ShareLinkAlert = ({ url }: { url: string }) => {
