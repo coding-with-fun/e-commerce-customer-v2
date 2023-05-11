@@ -5,6 +5,7 @@ import {
 import { Box, Typography } from '@mui/material';
 import Link from 'next/link';
 import Product from './Product';
+import Subtotal from './Subtotal';
 
 const ProductsList = ({ products }: IProps) => {
     return (
@@ -54,7 +55,7 @@ const ProductsList = ({ products }: IProps) => {
                 </tbody>
             </table>
 
-            {/* <Subtotal products={products} /> */}
+            <Subtotal products={products} />
         </Box>
     );
 };
