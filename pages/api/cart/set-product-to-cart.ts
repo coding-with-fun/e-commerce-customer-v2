@@ -53,7 +53,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         // Check if the entered quantity is more than the available quantity
         if (quantity && product.quantity < quantity) {
             throw new Error(
-                `Customer has only ${product.quantity} of the quantity available.`
+                `Seller has only ${product.quantity} of the quantity available.`
             );
         }
 
@@ -67,7 +67,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                 // Check if the entered quantity is more than the available quantity
                 if (product.quantity < quantity) {
                     throw new Error(
-                        `Customer has only ${product.quantity} of the quantity available.`
+                        `Seller has only ${product.quantity} of the quantity available.`
                     );
                 }
 
@@ -92,7 +92,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
             // Check if the entered quantity is more than the available quantity
             if (product.quantity < quantity) {
                 throw new Error(
-                    `Customer has only ${product.quantity} of the quantity available.`
+                    `Seller has only ${product.quantity} of the quantity available.`
                 );
             }
 
