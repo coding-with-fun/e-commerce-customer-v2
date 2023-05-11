@@ -71,7 +71,9 @@ const ProductsList = ({ products }: IProps) => {
                 ) : null}
             </table>
 
-            <Subtotal products={products} />
+            {customerCart && customerCart.cartData.length ? (
+                <Subtotal products={products} />
+            ) : null}
         </Box>
     );
 };

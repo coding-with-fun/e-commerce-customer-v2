@@ -89,21 +89,22 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                 },
             });
             if (localCartData) {
-                const updatedCustomerCart = await prisma.cart.update({
+                await prisma.cartData.createMany({
+                    data: localCartData.cartData,
+                    skipDuplicates: true,
+                });
+                const updatedCustomerCart = await prisma.cart.findFirst({
                     where: {
                         id: customerResponse.cart.id,
-                    },
-                    data: {
-                        cartData: {
-                            createMany: {
-                                data: localCartData.cartData,
-                            },
-                        },
                     },
                     include: {
                         cartData: true,
                     },
                 });
+                if (!updatedCustomerCart) {
+                    throw new Error('Cart not found.');
+                }
+
                 customerResponse.cart = updatedCustomerCart;
                 await prisma.cart.delete({
                     where: {
