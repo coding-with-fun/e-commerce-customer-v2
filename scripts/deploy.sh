@@ -10,7 +10,7 @@ git pull
 echo "----------------------------------------"
 echo "|        Installing packages...        |"
 echo "----------------------------------------"
-npm install
+yarn
 
 echo "-------------------------------------"
 echo "|        Building website...        |"
