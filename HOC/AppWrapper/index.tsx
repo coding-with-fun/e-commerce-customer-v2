@@ -24,7 +24,12 @@ const AppWrapper = ({ children }: IProps) => {
     const createAnonymousCartMutation = useMutation({
         mutationFn: createAnonymousCartAPI,
         onSuccess(data, variables, context) {
-            localStorage.setItem(env.redux.cartId, data.cartId);
+            localStorage.setItem(env.redux.cartId, data.cart.id);
+            dispatch(
+                setCart({
+                    cart: data.cart,
+                })
+            );
             setFetchingCartDetails(false);
         },
         onError(error, variables, context) {

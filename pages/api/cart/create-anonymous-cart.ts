@@ -1,5 +1,6 @@
 import prisma from '@/libs/prisma';
 import response from '@/libs/response';
+import { cart, cartData } from '@prisma/client';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -12,11 +13,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
             data: {
                 cartId: Date.now().toString(),
             },
+            include: {
+                cartData: true,
+            },
         });
 
         return response(res, {
             message: 'Cart created successfully.',
-            cartId: cart.id,
+            cart,
         });
     } catch (error) {
         return response(res, null, error);
@@ -29,5 +33,7 @@ export default handler;
 
 export type CartCreateAnonymousCartApiResponse = {
     message: string;
-    cartId: string;
+    cart: cart & {
+        cartData: cartData[];
+    };
 };
