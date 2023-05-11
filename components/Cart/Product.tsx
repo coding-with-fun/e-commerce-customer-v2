@@ -22,8 +22,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import EmptyCart from './EmptyCart';
+import { cartData } from '@prisma/client';
 
-const Product = ({ product }: IProps) => {
+const Product = ({ product, cartData }: IProps) => {
     const dispatch = useAppDispatch();
     const { customerCart } = useAppSelector((state) => state.cart);
     const { push } = useRouter();
@@ -58,12 +59,12 @@ const Product = ({ product }: IProps) => {
         }
     };
 
-    const handleProductToCart = () => {
+    const handleProductToCart = (alteredQuantity = quantity) => {
         if (customerCart) {
             setProductToCartMutation.mutate({
                 cartId: customerCart.id,
                 productId: product.id,
-                quantity: quantity,
+                quantity: alteredQuantity,
             });
         }
     };
@@ -121,10 +122,7 @@ const Product = ({ product }: IProps) => {
         return <EmptyCart />;
     }
 
-    return currentProduct &&
-        customerCart.cartData.find(
-            (el) => el.productId === currentProduct.id
-        ) ? (
+    return currentProduct ? (
         <tr>
             <td>
                 <Box
@@ -216,7 +214,7 @@ const Product = ({ product }: IProps) => {
                     <Box className="flex items-center justify-center ml-4 cursor-pointer">
                         <DeleteOutlineOutlinedIcon
                             onClick={() => {
-                                // handleProductToCart(0);
+                                handleProductToCart(0);
                             }}
                         />
                     </Box>
@@ -226,7 +224,7 @@ const Product = ({ product }: IProps) => {
             <td className="text-right w-[150px]">
                 <Box>
                     <Typography>
-                        Rs. {currentProduct.quantity * +currentProduct.price}
+                        Rs. {cartData.quantity * +currentProduct.price}
                     </Typography>
                 </Box>
             </td>
@@ -238,6 +236,7 @@ export default Product;
 
 interface IProps {
     product: CartGetCartProductApiResponse;
+    cartData: cartData;
 }
 
 const setProductToCartAPI = async (body: {

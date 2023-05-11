@@ -1,13 +1,14 @@
-import {
-    CartGetCartProductApiResponse,
-    CartGetCartProductsApiResponse,
-} from '@/pages/api/cart/get-cart-products';
+import { useAppSelector } from '@/hooks/redux';
+import { CartGetCartProductApiResponse } from '@/pages/api/cart/get-cart-products';
 import { Box, Typography } from '@mui/material';
 import Link from 'next/link';
 import Product from './Product';
 import Subtotal from './Subtotal';
+import { cartData } from '@prisma/client';
 
 const ProductsList = ({ products }: IProps) => {
+    const { customerCart } = useAppSelector((state) => state.cart);
+
     return (
         <Box className="px-8 py-16">
             <Box className="flex items-center justify-between mb-12">
@@ -47,12 +48,27 @@ const ProductsList = ({ products }: IProps) => {
                         </th>
                     </tr>
                 </thead>
+                {customerCart ? (
+                    <tbody className="border-t border-b border-gray-200">
+                        {customerCart.cartData.map((cartData: cartData) => {
+                            const product = products.find(
+                                (el) => el.id === cartData.productId
+                            );
 
-                <tbody className="border-t border-b border-gray-200">
-                    {products.map((product) => {
-                        return <Product product={product} key={product.id} />;
-                    })}
-                </tbody>
+                            if (!product) {
+                                return null;
+                            }
+
+                            return (
+                                <Product
+                                    product={product}
+                                    key={cartData.id}
+                                    cartData={cartData}
+                                />
+                            );
+                        })}
+                    </tbody>
+                ) : null}
             </table>
 
             <Subtotal products={products} />
