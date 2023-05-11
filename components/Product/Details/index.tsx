@@ -1,6 +1,9 @@
 import Modal from '@/HOC/Modal';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import axiosInstance from '@/libs/interceptor';
 import toast from '@/libs/toast';
+import { CartSetProductToCartApiResponse } from '@/pages/api/cart/set-product-to-cart';
+import { setCart } from '@/redux/slice/cart.slice';
 import env from '@/utils/env';
 import AddIcon from '@mui/icons-material/Add';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -9,10 +12,13 @@ import ShareIcon from '@mui/icons-material/Share';
 import {
     Box,
     ButtonBase,
+    CircularProgress,
     InputBase,
     Skeleton,
     Typography,
 } from '@mui/material';
+import { useMutation } from '@tanstack/react-query';
+import _ from 'lodash';
 import { signIn, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -30,6 +36,21 @@ const Details = ({ product }: IProps) => {
     const [isShareLinkAlertOpen, setIsShareLinkAlertOpen] = useState(false);
     const [cleanShareLinkAlertContent, setCleanShareLinkAlertContent] =
         useState(false);
+
+    const setProductToCartMutation = useMutation({
+        mutationFn: setProductToCartAPI,
+        onSuccess(data, variables, context) {
+            dispatch(
+                setCart({
+                    cart: data.cart,
+                })
+            );
+            toast('Product added to cart successfully', 'success');
+        },
+        onError(error, variables, context) {
+            toast(_.get(error, 'message', 'Something went wrong.'));
+        },
+    });
 
     const handleCloseShareLinkAlert = () => {
         setIsShareLinkAlertOpen(false);
@@ -61,22 +82,18 @@ const Details = ({ product }: IProps) => {
     };
 
     const handleProductToCart = () => {
-        // if (
-        //     (customerCart[product.id]?.cartQuantity ?? 0) + itemsToAddInCart >
-        //     product.quantity
-        // ) {
-        //     toast(
-        //         `The vendor has only ${product.quantity} of the quantity available.`
-        //     );
-        //     setItemsToAddInCart(1);
-        // } else {
-        //     dispatch(
-        //         addProductToCart({
-        //             product: product,
-        //             productQuantity: itemsToAddInCart,
-        //         })
-        //     );
-        // }
+        if (customerCart) {
+            const cartProduct = customerCart.cartData.find(
+                (el) => el.productId === product.id
+            );
+            setProductToCartMutation.mutate({
+                cartId: customerCart.id,
+                productId: product.id,
+                quantity: cartProduct
+                    ? cartProduct.quantity + itemsToAddInCart
+                    : itemsToAddInCart,
+            });
+        }
     };
 
     useEffect(() => {
@@ -175,8 +192,16 @@ const Details = ({ product }: IProps) => {
                         <ButtonBase
                             className="w-full h-12 flex justify-center items-center border border-[#28282B] border-solid cursor-pointer mt-3"
                             onClick={handleProductToCart}
+                            disabled={setProductToCartMutation.isLoading}
                         >
-                            <Typography>Add to cart</Typography>
+                            {setProductToCartMutation.isLoading ? (
+                                <CircularProgress
+                                    className="text-[#131415]"
+                                    size={20}
+                                />
+                            ) : (
+                                <Typography>Add to cart</Typography>
+                            )}
                         </ButtonBase>
 
                         {session.status === 'unauthenticated' ? (
@@ -269,4 +294,16 @@ const ShareLinkAlert = ({ url }: { url: string }) => {
             </Box>
         </Box>
     );
+};
+
+const setProductToCartAPI = async (body: {
+    cartId: string;
+    productId: string;
+    quantity: number;
+}) => {
+    const data: CartSetProductToCartApiResponse = await axiosInstance.post(
+        `${env.baseURL}/api/cart/set-product-to-cart`,
+        body
+    );
+    return data;
 };

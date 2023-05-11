@@ -42,8 +42,8 @@ body {
 }
 
 .cart-badge span {
-    color: #1976d2;
-    background-color: #ffffff;
+    color: #ffffff;
+    background-color: var(--darkBgColor);
     height: 20px;
     width: 20px;
     border-radius: 50%;

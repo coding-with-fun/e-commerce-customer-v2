@@ -80,7 +80,7 @@ export type ProductDetailsProduct = product & {
         id: string;
         name: string;
     };
-    favoriteBy: {
+    favoriteBy?: {
         id: string;
     }[];
 };

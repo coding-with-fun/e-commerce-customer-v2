@@ -1,6 +1,7 @@
 import prisma from '@/libs/prisma';
 import response from '@/libs/response';
 import requestValidator from '@/middlewares/requestValidator';
+import { cart, cartData } from '@prisma/client';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import z from 'zod';
 
@@ -37,6 +38,25 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
             throw new Error('Cart not found.');
         }
 
+        // Find if product exists
+        const product = await prisma.product.findFirst({
+            where: {
+                id: productId,
+                deletedAt: null,
+                isActive: true,
+            },
+        });
+        if (!product) {
+            throw new Error('Product not found.');
+        }
+
+        // Check if the entered quantity is more than the available quantity
+        if (quantity && product.quantity < quantity) {
+            throw new Error(
+                `Customer has only ${product.quantity} of the quantity available.`
+            );
+        }
+
         // Find if product exists in the cart
         const productCart = cart.cartData.find(
             (el) => el.productId === productId
@@ -44,6 +64,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
         if (productCart) {
             if (quantity) {
+                // Check if the entered quantity is more than the available quantity
+                if (product.quantity < quantity) {
+                    throw new Error(
+                        `Customer has only ${product.quantity} of the quantity available.`
+                    );
+                }
+
                 // If product exists and quantity is more than 0, update the cart
                 await prisma.cartData.update({
                     where: {
@@ -62,6 +89,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
                 });
             }
         } else if (quantity) {
+            // Check if the entered quantity is more than the available quantity
+            if (product.quantity < quantity) {
+                throw new Error(
+                    `Customer has only ${product.quantity} of the quantity available.`
+                );
+            }
+
             // If product does not exist and quantity is more than 0, create product in the cart
             await prisma.cartData.create({
                 data: {
@@ -80,8 +114,23 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
             });
         }
 
+        // Find updated cart
+        const updatedCart = await prisma.cart.findFirst({
+            where: {
+                id: cartId,
+            },
+            include: {
+                cartData: true,
+            },
+        });
+        if (!updatedCart) {
+            responseOptions.deleteCartId = true;
+            throw new Error('Cart not found.');
+        }
+
         return response(res, {
             message: 'Product added to cart successfully.',
+            cart: updatedCart,
         });
     } catch (error) {
         return response(res, responseOptions, error);
@@ -113,3 +162,11 @@ const getCartSchema = z.object({
     }),
 });
 type getCartSchemaType = z.infer<typeof getCartSchema>;
+
+export type CartSetProductToCartApiResponse = {
+    cart: cart & {
+        cartData: cartData[];
+    };
+    success: boolean;
+    message: string;
+};

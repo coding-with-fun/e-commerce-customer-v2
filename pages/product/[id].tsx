@@ -30,10 +30,10 @@ const Product = ({ data }: { data: ProductDetailsApiResponse }) => {
                       (el) => el.id === session.customer.id
                   )
                 : false;
-        omit(tempProduct, 'favoriteBy');
+        const newTempProduct = omit(tempProduct, 'favoriteBy');
 
         setProduct({
-            ...tempProduct,
+            ...newTempProduct,
         });
     }, [resProduct, session]);
 

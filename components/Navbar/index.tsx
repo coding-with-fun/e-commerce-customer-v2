@@ -1,5 +1,8 @@
+import { useAppSelector } from '@/hooks/redux';
+import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
 import {
     Avatar,
+    Badge,
     Box,
     IconButton,
     Menu,
@@ -11,12 +14,13 @@ import {
 import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Fragment, useState } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import Logo from '../../public/assets/logo/logo-no-background.svg';
 import Button from './Button';
 
 const Navbar = () => {
     const { status, data: session } = useSession();
+    const { customerCart } = useAppSelector((state) => state.cart);
 
     const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
@@ -28,17 +32,42 @@ const Navbar = () => {
         setAnchorElUser(null);
     };
 
+    const totalCartQuantity = useMemo(() => {
+        if (!customerCart) {
+            return 0;
+        }
+
+        return customerCart.cartData.reduce(
+            (prev, current) => prev + current.quantity,
+            0
+        );
+    }, [customerCart]);
+
     return (
-        <Box className="h-16 absolute top-0 right-0 left-0 shadow-sm flex items-center justify-between px-8 z-50">
+        <Box className="h-16 fixed top-0 right-0 left-0 shadow-md flex items-center justify-between px-8 z-50 bg-[#f6f6f6]">
             <Link href="/">
                 <Image height={25} src={Logo} alt="Avira" />
             </Link>
 
-            <Box className="flex gap-4">
+            <Box className="flex gap-4 items-center">
                 {status === 'loading' ? (
                     <Skeleton width={220} height={25} />
                 ) : (
                     <Fragment>
+                        <Link href="/cart" className="mr-3">
+                            <Badge
+                                badgeContent={totalCartQuantity}
+                                className="cart-badge"
+                            >
+                                <ShoppingBagOutlinedIcon
+                                    sx={{
+                                        color: '#131415',
+                                        cursor: 'pointer',
+                                    }}
+                                />
+                            </Badge>
+                        </Link>
+
                         {status === 'unauthenticated' ? (
                             <Link href="/auth/signin">
                                 <Button type="outlined">Sign In</Button>
