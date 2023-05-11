@@ -64,3 +64,7 @@ body {
 .font-poppins {
     font-family: 'Poppins', sans-serif;
 }
+
+.subdued-text {
+    color: var(--subduedTextColor);
+}
