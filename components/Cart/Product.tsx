@@ -84,6 +84,7 @@ const Product = ({ product, cartData }: IProps) => {
         },
         onError(error, variables, context) {
             toast(_.get(error, 'message', 'Something went wrong.'));
+            changeInQuantity.current = false;
             setQuantity(cartData.quantity);
         },
     });
