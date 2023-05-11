@@ -1,6 +1,10 @@
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import axiosInstance from '@/libs/interceptor';
 import toast from '@/libs/toast';
 import { CartGetCartProductApiResponse } from '@/pages/api/cart/get-cart-products';
+import { CartSetProductToCartApiResponse } from '@/pages/api/cart/set-product-to-cart';
+import { setCart } from '@/redux/slice/cart.slice';
+import env from '@/utils/env';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -11,6 +15,8 @@ import {
     Skeleton,
     Typography,
 } from '@mui/material';
+import { useMutation } from '@tanstack/react-query';
+import _ from 'lodash';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -18,17 +24,63 @@ import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import EmptyCart from './EmptyCart';
 
 const Product = ({ product }: IProps) => {
+    const dispatch = useAppDispatch();
     const { customerCart } = useAppSelector((state) => state.cart);
     const { push } = useRouter();
 
     const productSlug = product.title.split(' ').join('-') + `--${product.id}`;
 
     const [isImageLoading, setIsImageLoading] = useState(true);
-    const [currentProduct, setCurrentProduct] = useState<
-        CartGetCartProductApiResponse & {
-            quantity: number;
+    const [currentProduct, setCurrentProduct] =
+        useState<CartGetCartProductApiResponse>();
+    const [quantity, setQuantity] = useState(0);
+    const changeInQuantity = useRef(false);
+
+    const handleChangeItemsInCart = (e: ChangeEvent<HTMLInputElement>) => {
+        let value: number | string = e.target.value;
+
+        if (!isNaN(+value)) {
+            value = +value;
+            changeInQuantity.current = true;
+            setQuantity(value);
         }
-    >();
+    };
+
+    const handleAddMoreToCart = () => {
+        changeInQuantity.current = true;
+        setQuantity((prev) => prev + 1);
+    };
+
+    const handleRemoveFromCart = () => {
+        if (quantity > 0) {
+            changeInQuantity.current = true;
+            setQuantity((prev) => prev - 1);
+        }
+    };
+
+    const handleProductToCart = () => {
+        if (customerCart) {
+            setProductToCartMutation.mutate({
+                cartId: customerCart.id,
+                productId: product.id,
+                quantity: quantity,
+            });
+        }
+    };
+
+    const setProductToCartMutation = useMutation({
+        mutationFn: setProductToCartAPI,
+        onSuccess(data, variables, context) {
+            dispatch(
+                setCart({
+                    cart: data.cart,
+                })
+            );
+        },
+        onError(error, variables, context) {
+            toast(_.get(error, 'message', 'Something went wrong.'));
+        },
+    });
 
     useEffect(() => {
         if (customerCart) {
@@ -39,8 +91,8 @@ const Product = ({ product }: IProps) => {
             if (productInCart) {
                 setCurrentProduct({
                     ...product,
-                    quantity: productInCart.quantity,
                 });
+                setQuantity(productInCart.quantity);
             }
         }
     }, [product, customerCart]);
@@ -53,11 +105,26 @@ const Product = ({ product }: IProps) => {
         return () => clearTimeout(loadImage);
     }, []);
 
+    useEffect(() => {
+        const changeQuantityTimeout = setTimeout(() => {
+            if (changeInQuantity.current) {
+                handleProductToCart();
+            }
+        }, 1000);
+
+        return () => clearTimeout(changeQuantityTimeout);
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [quantity]);
+
     if (!customerCart) {
         return <EmptyCart />;
     }
 
-    return currentProduct ? (
+    return currentProduct &&
+        customerCart.cartData.find(
+            (el) => el.productId === currentProduct.id
+        ) ? (
         <tr>
             <td>
                 <Box
@@ -121,15 +188,15 @@ const Product = ({ product }: IProps) => {
                         <ButtonBase
                             className="w-11 h-11 flex cursor-pointer"
                             onClick={() => {
-                                // handleRemoveFromCart();
+                                handleRemoveFromCart();
                             }}
                         >
                             <RemoveIcon className="m-auto pointer-events-none w-4" />
                         </ButtonBase>
 
                         <InputBase
-                            value={currentProduct.quantity}
-                            // onChange={handleChangeItemsInCart}
+                            value={quantity}
+                            onChange={handleChangeItemsInCart}
                             className="w-12 h-11"
                             inputProps={{
                                 className: 'text-center h-full w-full p-0',
@@ -139,7 +206,7 @@ const Product = ({ product }: IProps) => {
                         <ButtonBase
                             className="w-11 h-11 flex cursor-pointer"
                             onClick={() => {
-                                // handleAddMoreToCart();
+                                handleAddMoreToCart();
                             }}
                         >
                             <AddIcon className="m-auto pointer-events-none w-4" />
@@ -174,3 +241,15 @@ export default Product;
 interface IProps {
     product: CartGetCartProductApiResponse;
 }
+
+const setProductToCartAPI = async (body: {
+    cartId: string;
+    productId: string;
+    quantity: number;
+}) => {
+    const data: CartSetProductToCartApiResponse = await axiosInstance.post(
+        `${env.baseURL}/api/cart/set-product-to-cart`,
+        body
+    );
+    return data;
+};
