@@ -3,6 +3,7 @@ import { useAppSelector } from '@/hooks/redux';
 import { CartGetCartProductApiResponse } from '@/pages/api/cart/get-cart-products';
 import { Box, ButtonBase, Typography } from '@mui/material';
 import Link from 'next/link';
+import { formatAmount } from '@/utils';
 
 const Subtotal = ({ products }: IProps) => {
     const { customerCart } = useAppSelector((state) => state.cart);
@@ -34,7 +35,9 @@ const Subtotal = ({ products }: IProps) => {
                     <Typography className="text-xl font-semibold">
                         Subtotal
                     </Typography>
-                    <Typography className="text-lg">Rs. {subtotal}</Typography>
+                    <Typography className="text-lg">
+                        {formatAmount(subtotal)}
+                    </Typography>
                 </Box>
 
                 <Box component="small" className="mt-5 mb-3">

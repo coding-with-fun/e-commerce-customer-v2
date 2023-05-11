@@ -22,13 +22,14 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Fragment, useEffect, useState } from 'react';
 import SignInAlert from './SignInAlert';
+import { getSlug } from '@/utils';
 
 const Product = ({ product }: IProps) => {
     const { push } = useRouter();
     const { status } = useSession();
     const dispatch = useAppDispatch();
 
-    const productSlug = product.title.split(' ').join('-') + `--${product.id}`;
+    const productSlug = getSlug(product);
 
     const [isImageLoading, setIsImageLoading] = useState(true);
     const [isSignInAlertOpen, setIsSignInAlertOpen] = useState(false);

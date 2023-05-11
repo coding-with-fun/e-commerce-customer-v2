@@ -24,13 +24,14 @@ import { useRouter } from 'next/router';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import EmptyCart from './EmptyCart';
 import { cartData } from '@prisma/client';
+import { formatAmount, getSlug } from '@/utils';
 
 const Product = ({ product, cartData }: IProps) => {
     const dispatch = useAppDispatch();
     const { customerCart } = useAppSelector((state) => state.cart);
     const { push } = useRouter();
 
-    const productSlug = product.title.split(' ').join('-') + `--${product.id}`;
+    const productSlug = getSlug(product);
 
     const [isImageLoading, setIsImageLoading] = useState(true);
     const [currentProduct, setCurrentProduct] =
@@ -178,7 +179,7 @@ const Product = ({ product, cartData }: IProps) => {
                         </Link>
 
                         <Typography className="text-sm">
-                            Rs. {product.price.toString()}
+                            {formatAmount(+product.price)}
                         </Typography>
                     </Box>
                 </Box>
@@ -255,7 +256,9 @@ const Product = ({ product, cartData }: IProps) => {
                         />
                     ) : (
                         <Typography>
-                            Rs. {cartData.quantity * +currentProduct.price}
+                            {formatAmount(
+                                cartData.quantity * +currentProduct.price
+                            )}
                         </Typography>
                     )}
                 </Box>
