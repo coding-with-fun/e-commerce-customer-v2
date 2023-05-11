@@ -11,6 +11,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import {
     Box,
     ButtonBase,
+    CircularProgress,
     InputBase,
     Skeleton,
     Typography,
@@ -188,8 +189,11 @@ const Product = ({ product, cartData }: IProps) => {
                     <Box className="flex items-center border border-[#28282B] border-solid w-fit">
                         <ButtonBase
                             className="w-11 h-11 flex cursor-pointer"
+                            disabled={setProductToCartMutation.isLoading}
                             onClick={() => {
-                                handleRemoveFromCart();
+                                setProductToCartMutation.isLoading
+                                    ? null
+                                    : handleRemoveFromCart();
                             }}
                         >
                             <RemoveIcon className="m-auto pointer-events-none w-4" />
@@ -197,6 +201,7 @@ const Product = ({ product, cartData }: IProps) => {
 
                         <InputBase
                             value={quantity}
+                            disabled={setProductToCartMutation.isLoading}
                             onChange={handleChangeItemsInCart}
                             className="w-12 h-11"
                             inputProps={{
@@ -206,18 +211,29 @@ const Product = ({ product, cartData }: IProps) => {
 
                         <ButtonBase
                             className="w-11 h-11 flex cursor-pointer"
+                            disabled={setProductToCartMutation.isLoading}
                             onClick={() => {
-                                handleAddMoreToCart();
+                                setProductToCartMutation.isLoading
+                                    ? null
+                                    : handleAddMoreToCart();
                             }}
                         >
                             <AddIcon className="m-auto pointer-events-none w-4" />
                         </ButtonBase>
                     </Box>
 
-                    <Box className="flex items-center justify-center ml-4 cursor-pointer">
+                    <Box
+                        className={`flex items-center justify-center ml-4 ${
+                            setProductToCartMutation.isLoading
+                                ? 'opacity-20'
+                                : 'opacity-100 cursor-pointer'
+                        }`}
+                    >
                         <DeleteOutlineOutlinedIcon
                             onClick={() => {
-                                handleProductToCart(0);
+                                setProductToCartMutation.isLoading
+                                    ? null
+                                    : handleProductToCart(0);
                             }}
                         />
                     </Box>
@@ -226,9 +242,16 @@ const Product = ({ product, cartData }: IProps) => {
 
             <td className="text-right w-[150px]">
                 <Box>
-                    <Typography>
-                        Rs. {cartData.quantity * +currentProduct.price}
-                    </Typography>
+                    {setProductToCartMutation.isLoading ? (
+                        <CircularProgress
+                            size={20}
+                            className="text-[#131415]"
+                        />
+                    ) : (
+                        <Typography>
+                            Rs. {cartData.quantity * +currentProduct.price}
+                        </Typography>
+                    )}
                 </Box>
             </td>
         </tr>
