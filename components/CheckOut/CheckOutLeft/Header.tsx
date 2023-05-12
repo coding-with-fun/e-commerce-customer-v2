@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 const Header = () => {
     return (
-        <Box className="flex items-center">
+        <Box className="flex items-center w-full">
             <Link href="/cart" className="text-xs subdued-text">
                 Cart
             </Link>
